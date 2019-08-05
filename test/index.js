@@ -1,18 +1,21 @@
 const tap = require('tap');
-const IconWebScrapper = require('./../index');
+const webIconScraper = require('./../index');
 
-IconWebScrapper({
+webIconScraper({
   url: 'https://github.com',
   sort: 'des'
 }).then(result => {
-  tap.equal(
-    [
+  const mock = {
+    icons: [
       {
         type: 'favicon',
         size: undefined,
         link: 'https://github.githubassets.com/favicon.ico'
       }
-    ].toString(),
-    result.toString()
-  )
+    ]
+  };
+  tap.equal(mock.icons.length, result.icons.length);
+  tap.equal(mock.icons[0].type, result.icons[0].type);
+  tap.equal(mock.icons[0].link, result.icons[0].link);
 });
+
