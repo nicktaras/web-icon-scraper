@@ -9,7 +9,7 @@ Example Use:
 
 ````
 
-  const webIconScraper = require('./index');
+  const webIconScraper = require('web-icon-scraper');
 
   webIconScraper({
     url: 'https://github.com',
