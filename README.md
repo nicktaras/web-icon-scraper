@@ -8,7 +8,10 @@ This is not production ready at this time - Please use with caution.
 Example Use:
 
 ````
-  IconWebScrapper({
+
+  const webIconScraper = require('./index');
+
+  webIconScraper({
     url: 'https://github.com',
     sort: 'des'
   }).then(output => {
@@ -24,6 +27,11 @@ Example Use:
     }
   ]
 ````
+
+Options:
+
+url: 'url' you wish to use as String (Required)
+sort: 'asc' or 'des' as String (descending or ascending sort order)
 
 # Test
 from the /test directory run, yarn test

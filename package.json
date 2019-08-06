@@ -1,6 +1,6 @@
 {
   "name": "web-icon-scraper",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "A Node Package to retrieve an array of favicons and apple-touch-icon images sorting them into ascending or descending size order.",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,8 @@
     "favicons",
     "appleicons",
     "icons",
-    "javascript"
+    "javascript",
+    "nodejs"
   ],
   "author": "Nicholas Taras <nicktaras83@gmail.com>",
   "license": "MIT",
