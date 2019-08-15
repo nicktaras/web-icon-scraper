@@ -1,3 +1,5 @@
+https://www.npmjs.com/package/tldjs - to do enhance scrapping!
+
 # web-icon-scraper
 A Node Package to retrieve an array of favicons and apple-touch-icon images sorting them into ascending or descending size order.
 
