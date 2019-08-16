@@ -12,7 +12,12 @@ const getIconMaxSize = (sizes) => {
   return (sizes && sIndex) ? Number(sizes.substring(sIndex, sizes.length)) : undefined;
 }
 
-// Clean up the link
+// reducese slashes to a max of 2.
+const reduceSlashes = (url) => {
+  return url.replace(/(.)(?=\/\1)/g, "");
+}
+
+// Clean up the link - TODO tidy this function.
 const getCleanLink = ({ link, host, reqProtocol }) => {
   if (!link) console.warn('getCleanLink: link was missing');
   const indexOfHttp = link.indexOf('http');
@@ -22,7 +27,8 @@ const getCleanLink = ({ link, host, reqProtocol }) => {
   // e.g. example.www.a.com/favicon.ico
   if (indexOfWww > 0 && indexOfHttp === -1) {
     const removeChars = link.substring(0, indexOfWww);
-    return link.replace(removeChars, '');
+    link = link.replace(removeChars, '');
+    return reduceSlashes(`${reqProtocol}://${link}`);
   }
   // e.g. example.https://a.com/favicon.ico
   if (indexOfHttp > 0) {
@@ -33,10 +39,10 @@ const getCleanLink = ({ link, host, reqProtocol }) => {
   const linkToArray = link.replace(/([/.])/g, ',').toUpperCase().split(',');
   const matchFound = linkToArray.some(r => domainExtList.indexOf(r) >= 0);
   if (matchFound) {
-    return `${reqProtocol}:${link}`;
+    return reduceSlashes(`${reqProtocol}://${link}`);
   }
   if (host) {
-    return `${host}${link}`;
+    return reduceSlashes(`${reqProtocol}://${host}${link}`);
   }
   return undefined;
 }
@@ -56,9 +62,31 @@ const getIconDataOrdered = ({ sort = 'asc', icons }) => {
   return icons.sort(sortBySize.descending);
 };
 
+const removeDuplicateData = (icons) => {
+  const uniqueIcons = new Set(icons);
+  icons = [...uniqueIcons];
+  return icons;
+}
+
+const containsIcon = (rel) => {
+  const iconTypes = [
+    'icon', 'msapplication - TileImage',
+    'image / vnd.microsoft.icon', 'image / x - icon',
+    'shortcut icon'
+  ]
+  return (iconTypes.includes(rel));
+}
+
+const containsAppleIcon = (rel) => {
+  const appleIconTypes = [
+    'apple-touch-icon'
+  ]
+  return (appleIconTypes.includes(rel));
+}
+
 module.exports = {
   // Returns object array [{ type: String size: String link: String }]
-  getIconRequest: ({ url, sort = 'asc' }) => {
+  getIconRequest: ({ url, sort = 'asc', limit = 10 }) => {
     return new Promise(function (resolve, reject) {
       const _url = urlMod.parse(url, true);
       const host = _url.host;
@@ -78,33 +106,33 @@ module.exports = {
             // TODO - handle strategy for: undefinedRedirecting to https://...
             if (data) {
               const $ = cheerio.load(data);
-              $('link[rel="icon"]').each(function () {
-                icons.push(getIconData({ type: 'favicon', data: $(this), host, reqProtocol }));
-              });
-              $('link[rel="icon"]').each(function () {
-                icons.push(getIconData({ type: 'favicon', data: $(this), host, reqProtocol }));
-              });
-              $('link[type="msapplication - TileImage"]').each(function () {
-                icons.push(getIconData({ type: 'favicon', data: $(this), host, reqProtocol }));
-              });
-              $('link[type="image / vnd.microsoft.icon"]').each(function () {
-                icons.push(getIconData({ type: 'favicon', data: $(this), host, reqProtocol }));
-              });
-              $('link[type="image / x - icon"]').each(function () {
-                icons.push(getIconData({ type: 'favicon', data: $(this), host, reqProtocol }));
-              });
-              $('link[rel="shortcut icon"]').each(function () {
-                icons.push(getIconData({ type: 'favicon', data: $(this), host, reqProtocol }));
-              });
-              $('link[rel="apple-touch-icon"]').each(function () {
-                icons.push(getIconData({ type: 'apple-touch-icon', data: $(this), host, reqProtocol }));
+              $('link').each(function () {
+                if (icons.length < limit) {
+                  const rel = $(this).attr('rel');
+                  if (containsIcon(rel)) {
+                    icons.push(getIconData({
+                      type: 'favicon',
+                      data: $(this),
+                      host,
+                      reqProtocol
+                    }));
+                  }
+                  if (containsAppleIcon(rel)) {
+                    icons.push(getIconData({
+                      type: 'apple-touch-icon',
+                      data: $(this),
+                      host,
+                      reqProtocol
+                    }));
+                  }
+                }
               });
               if (sort === 'asc') { icons = getIconDataOrdered({ sort, icons }) }
               else { icons = getIconDataOrdered({ sort, icons }) }
             }
           }
-          const uniqueIcons = new Set(icons);
-          icons = [...uniqueIcons];
+          icons = removeDuplicateData(icons);
+          // TODO handle check to ensure the icons resolve 200.
           resolve({ icons });
         });
       }).on('error', (e) => {
@@ -117,29 +145,3 @@ module.exports = {
     });
   }
 };
-
-
-// if ($(link[rel = "icon"])) {
-//   console.log('icon');
-//   icons.push(getIconData({ type: 'favicon', data: $(link), host }));
-// }
-// if (link.toString().indexOf('favicon') > -1) {
-//   console.log('text of fav');
-//   icons.push(getIconData({ type: 'favicon', data: $(link), host }));
-// }
-// if ($(link[rel = "shortcut icon"])) {
-//   console.log('short');
-//   icons.push(getIconData({ type: 'favicon', data: $(link), host }));
-// }
-// if ($(link[type = "image/vnd.microsoft.icon"])) {
-//   console.log('micro');
-//   icons.push(getIconData({ type: 'favicon', data: $(link), host }));
-// }
-// if ($(link[type = "msapplication - TileImage"])) {
-//   console.log('tile');
-//   icons.push(getIconData({ type: 'favicon', data: $(link), host }));
-// }
-// if ($(link[rel = "apple-touch-icon"])) {
-//   console.log('apple-touch-icon');
-//   icons.push(getIconData({ type: 'apple-touch-icon', data: $(link), host }));
-// }

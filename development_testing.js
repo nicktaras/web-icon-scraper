@@ -1,10 +1,12 @@
 const webIconScraper = require('./index');
 
 webIconScraper({
-  url: 'https://reactjs.org/',
-  sort: 'des'
+  url: 'https://momentjs.com',
+  sort: 'des',
+  limit: 1
 }).then(result => {
   console.log(result);
 }, err => {
   console.log(err);
 });
+

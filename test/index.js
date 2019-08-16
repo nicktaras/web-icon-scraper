@@ -10,13 +10,18 @@ webIconScraper({
       {
         type: 'favicon',
         size: undefined,
-        link: 'reactjs.org/favicon.ico'
+        link: 'https://reactjs.org/favicon.ico'
       },
     ]
   };
   tap.equal(mock.icons[0].type, result.icons[0].type);
   tap.equal(mock.icons[0].link, result.icons[0].link);
 });
+
+// --- wanted                                                          
+// +++ found                                                           
+// -www.sony.com.au/assets/images/apple-touch-icon-114x114.png         
+// +https://www.sony.com.au/assets/images/apple-touch-icon-114x114.png
 
 webIconScraper({
   url: 'https://www.sony.com.au/',
@@ -27,7 +32,7 @@ webIconScraper({
       {
         type: 'apple-touch-icon',
         size: 114,
-        link: 'www.sony.com.au/assets/images/apple-touch-icon-114x114.png'
+        link: 'https://www.sony.com.au/assets/images/apple-touch-icon-114x114.png'
       },
     ]
   };
@@ -61,7 +66,7 @@ webIconScraper({
       {
         type: 'apple-touch-icon',
         size: 144,
-        link: 'https:/content/dam/global/favicons/apple-touch-icon-144x144.png'
+        link: 'https://content/dam/global/favicons/apple-touch-icon-144x144.png'
       },
     ]
   };
@@ -78,7 +83,7 @@ webIconScraper({
       {
         type: 'favicon',
         size: undefined,
-        link: 'www.ibm.com/favicon.ico'
+        link: 'https://www.ibm.com/favicon.ico'
       }
     ]
   };
@@ -112,7 +117,7 @@ webIconScraper({
       {
         type: 'favicon',
         size: undefined,
-        link: 'momentjs.com/static/img/moment-favicon.png'
+        link: 'https://momentjs.com/static/img/moment-favicon.png'
       }
     ]
   };

@@ -1,5 +1,3 @@
-https://www.npmjs.com/package/tldjs - to do enhance scrapping!
-
 # web-icon-scraper
 A Node Package to retrieve an array of favicons and apple-touch-icon images sorting them into ascending or descending size order.
 
@@ -15,7 +13,8 @@ Example Use:
 
   webIconScraper({
     url: 'https://github.com',
-    sort: 'des'
+    sort: 'des',
+    limit: 1
   }).then(output => {
     console.log(output);
   });
@@ -30,10 +29,13 @@ Example Use:
   ]
 ````
 
-Options:
+# Options:
 
-url: 'url' you wish to use as String (Required)
-sort: 'asc' or 'des' as String (descending or ascending sort order)
+url: 'url' you wish to use as String (required)
+
+sort: 'asc' or 'des' (descending or ascending in size)
+
+limit: number to limit icons, defaults to 10.
 
 # Test
 from the /test directory run, yarn test
