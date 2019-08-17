@@ -1,145 +1,26 @@
 const tap = require('tap');
 const webIconScraper = require('./../index');
 
-webIconScraper({
-  url: 'https://reactjs.org/',
-  sort: 'des'
-}).then(result => {
-  const mock = {
-    icons: [
-      {
-        type: 'favicon',
-        size: undefined,
-        link: 'https://reactjs.org/favicon.ico'
-      },
-    ]
-  };
-  tap.equal(mock.icons[0].type, result.icons[0].type);
-  tap.equal(mock.icons[0].link, result.icons[0].link);
+const linkTestData = [
+  { url: "https://reactjs.org/", expected: "https://reactjs.org/favicon.ico" },
+  { url: "https://www.sony.com.au/", expected: "https://www.sony.com.au/assets/images/apple-touch-icon-114x114.png" },
+  { url: "https://www.bbc.co.uk/", expected: "https://www.bbc.co.uk/favicon.ico" },
+  { url: "https://www.apple.com.au/", expected: "https://www.apple.com.au/favicon.ico" },
+  { url: "https://github.com", expected: "https://github.githubassets.com/favicon.ico" },
+  { url: "https://auspost.com.au/", expected: "https://auspost.com.au/content/dam/global/favicons/apple-touch-icon-144x144.png" },
+  { url: "https://www.ibm.com/au-en", expected: "https://www.ibm.com/favicon.ico" },
+  { url: "https://www.bose.com.au/en_au/index.html", expected: "https://static.bose.com/etc/designs/bose/consumer-products-2016/favicon.ico" },
+  { url: "https://momentjs.com", expected: "https://momentjs.com/static/img/moment-favicon.png" },
+  { url: "https://slack.com/intl/en-au/", expected: "https://a.slack-edge.com/4a5c4/marketing/img/meta/favicon-32.png" },
+  { url: "https://www.ministryofsound.com/", expected: "https://www.ministryofsound.com/media/3982/mos-favicon.png?width=180&height=180" }
+];
+
+tap.test('Ensure links are correct', async tap => {
+  for (var i = 0; i < linkTestData.length; i++) {
+    const result = await webIconScraper({ url: linkTestData[0].url, sort: 'des' });
+    await tap.test('check result', async tap => tap.equal(
+      result.icons[0].link, linkTestData[0].expected)
+    )
+  }
 });
-
-// --- wanted                                                          
-// +++ found                                                           
-// -www.sony.com.au/assets/images/apple-touch-icon-114x114.png         
-// +https://www.sony.com.au/assets/images/apple-touch-icon-114x114.png
-
-webIconScraper({
-  url: 'https://www.sony.com.au/',
-  sort: 'des'
-}).then(result => {
-  const mock = {
-    icons: [
-      {
-        type: 'apple-touch-icon',
-        size: 114,
-        link: 'https://www.sony.com.au/assets/images/apple-touch-icon-114x114.png'
-      },
-    ]
-  };
-  tap.equal(mock.icons[0].type, result.icons[0].type);
-  tap.equal(mock.icons[0].link, result.icons[0].link);
-});
-
-webIconScraper({
-  url: 'https://github.com',
-  sort: 'des'
-}).then(result => {
-  const mock = {
-    icons: [
-      {
-        type: 'favicon',
-        size: undefined,
-        link: 'https://github.githubassets.com/favicon.ico'
-      }
-    ]
-  };
-  tap.equal(mock.icons[0].type, result.icons[0].type);
-  tap.equal(mock.icons[0].link, result.icons[0].link);
-});
-
-webIconScraper({
-  url: 'https://auspost.com.au/delivery-options',
-  sort: 'des'
-}).then(result => {
-  const mock = {
-    icons: [
-      {
-        type: 'apple-touch-icon',
-        size: 144,
-        link: 'https://content/dam/global/favicons/apple-touch-icon-144x144.png'
-      },
-    ]
-  };
-  tap.equal(mock.icons[0].type, result.icons[0].type);
-  tap.equal(mock.icons[0].link, result.icons[0].link);
-});
-
-webIconScraper({
-  url: 'https://www.ibm.com/au-en',
-  sort: 'des'
-}).then(result => {
-  const mock = {
-    icons: [
-      {
-        type: 'favicon',
-        size: undefined,
-        link: 'https://www.ibm.com/favicon.ico'
-      }
-    ]
-  };
-  tap.equal(mock.icons[0].type, result.icons[0].type);
-  tap.equal(mock.icons[0].link, result.icons[0].link);
-});
-
-webIconScraper({
-  url: 'https://www.bose.com.au/en_au/index.html',
-  sort: 'des'
-}).then(result => {
-  const mock = {
-    icons: [
-      {
-        type: 'favicon',
-        size: undefined,
-        link: 'https://static.bose.com/etc/designs/bose/consumer-products-2016/favicon.ico'
-      },
-    ]
-  };
-  tap.equal(mock.icons[0].type, result.icons[0].type);
-  tap.equal(mock.icons[0].link, result.icons[0].link);
-});
-
-webIconScraper({
-  url: 'https://momentjs.com',
-  sort: 'des'
-}).then(result => {
-  const mock = {
-    icons: [
-      {
-        type: 'favicon',
-        size: undefined,
-        link: 'https://momentjs.com/static/img/moment-favicon.png'
-      }
-    ]
-  };
-  tap.equal(mock.icons[0].type, result.icons[0].type);
-  tap.equal(mock.icons[0].link, result.icons[0].link);
-});
-
-webIconScraper({
-  url: 'https://slack.com/intl/en-au/',
-  sort: 'des'
-}).then(result => {
-  const mock = {
-    icons: [
-      {
-        type: 'favicon',
-        size: 48,
-        link: 'https://a.slack-edge.com/4a5c4/marketing/img/meta/favicon-32.png'
-      }
-    ]
-  };
-  tap.equal(mock.icons[0].type, result.icons[0].type);
-  tap.equal(mock.icons[0].link, result.icons[0].link);
-});
-
 

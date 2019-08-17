@@ -14,7 +14,7 @@ const getIconMaxSize = (sizes) => {
 
 // reducese slashes to a max of 2.
 const reduceSlashes = (url) => {
-  return url.replace(/(.)(?=\/\1)/g, "");
+  return url.replace(/(\/)(?=\/\1)/g, "");
 }
 
 // Clean up the link - TODO tidy this function.
@@ -36,13 +36,13 @@ const getCleanLink = ({ link, host, reqProtocol }) => {
     return link.replace(removeChars, '');
   }
   // e.g. static.com/favicon.ico
-  const linkToArray = link.replace(/([/.])/g, ',').toUpperCase().split(',');
+  const linkToArray = link.toUpperCase().split(/(?=[\/.])/g);
   const matchFound = linkToArray.some(r => domainExtList.indexOf(r) >= 0);
   if (matchFound) {
     return reduceSlashes(`${reqProtocol}://${link}`);
   }
   if (host) {
-    return reduceSlashes(`${reqProtocol}://${host}${link}`);
+    return reduceSlashes(reqProtocol + '://' + host + link);
   }
   return undefined;
 }
@@ -104,34 +104,42 @@ module.exports = {
           if (data) {
             data = data.toString();
             // TODO - handle strategy for: undefinedRedirecting to https://...
-            if (data) {
-              const $ = cheerio.load(data);
-              $('link').each(function () {
-                if (icons.length < limit) {
-                  const rel = $(this).attr('rel');
-                  if (containsIcon(rel)) {
-                    icons.push(getIconData({
-                      type: 'favicon',
-                      data: $(this),
-                      host,
-                      reqProtocol
-                    }));
-                  }
-                  if (containsAppleIcon(rel)) {
-                    icons.push(getIconData({
-                      type: 'apple-touch-icon',
-                      data: $(this),
-                      host,
-                      reqProtocol
-                    }));
-                  }
+            const $ = cheerio.load(data);
+            $('link').each(function () {
+              if (icons.length < limit) {
+                const rel = $(this).attr('rel');
+                if (containsIcon(rel)) {
+                  icons.push(getIconData({
+                    type: 'favicon',
+                    data: $(this),
+                    host,
+                    reqProtocol
+                  }));
                 }
-              });
-              if (sort === 'asc') { icons = getIconDataOrdered({ sort, icons }) }
-              else { icons = getIconDataOrdered({ sort, icons }) }
-            }
+                if (containsAppleIcon(rel)) {
+                  icons.push(getIconData({
+                    type: 'apple-touch-icon',
+                    data: $(this),
+                    host,
+                    reqProtocol
+                  }));
+                }
+              }
+            });
+            if (sort === 'asc') { icons = getIconDataOrdered({ sort, icons }) }
+            else { icons = getIconDataOrdered({ sort, icons }) }
           }
           icons = removeDuplicateData(icons);
+          // Last Chance 
+          if (icons.length === 0) {
+            icons = [
+              {
+                type: 'favicon',
+                size: undefined,
+                link: reduceSlashes(`${reqProtocol}://${host}/favicon.ico`)
+              },
+            ]
+          }
           // TODO handle check to ensure the icons resolve 200.
           resolve({ icons });
         });
