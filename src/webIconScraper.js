@@ -141,6 +141,7 @@ module.exports = {
             ]
           }
           // TODO handle check to ensure the icons resolve 200.
+          // ensure
           resolve({ icons });
         });
       }).on('error', (e) => {
