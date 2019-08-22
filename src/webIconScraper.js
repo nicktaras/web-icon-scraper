@@ -84,9 +84,32 @@ const containsAppleIcon = (rel) => {
   return (appleIconTypes.includes(rel));
 }
 
+const checkIconsStatus = async (reqTypes, reqTypeIndex, icons) => {
+  let iconsResolved = [];
+  for (const icon of icons) {
+    const result = await checkIconStatus(reqTypes, reqTypeIndex, icon);
+    if (result.statusCode == 200) {
+      iconsResolved.push(result.icon);
+    }
+  }
+  icons = iconsResolved;
+  return icons;
+}
+
+const checkIconStatus = (reqTypes, reqTypeIndex, icon) => {
+  return new Promise(function (resolve, reject) {
+    reqTypes[reqTypeIndex].get(icon.link, (res) => {
+      resolve({
+        statusCode: res.statusCode,
+        icon
+      });
+    });
+  });
+}
+
 module.exports = {
   // Returns object array [{ type: String size: String link: String }]
-  getIconRequest: ({ url, sort = 'asc', limit = 10 }) => {
+  getIconRequest: ({ url, sort = 'asc', limit = 10, checkStatus = false }) => {
     return new Promise(function (resolve, reject) {
       const _url = urlMod.parse(url, true);
       const host = _url.host;
@@ -140,9 +163,13 @@ module.exports = {
               },
             ]
           }
-          // TODO handle check to ensure the icons resolve 200.
-          // ensure
-          resolve({ icons });
+          if (checkStatus) {
+            checkIconsStatus(reqTypes, reqTypeIndex, icons).then((icons) => {
+              resolve({ icons });
+            });
+          } else {
+            resolve({ icons });
+          }
         });
       }).on('error', (e) => {
         reject({

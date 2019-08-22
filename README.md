@@ -13,7 +13,8 @@ Example Use:
   webIconScraper({
     url: 'https://github.com',
     sort: 'des',
-    limit: 1
+    limit: 1,
+    checkStatus: false
   }).then(output => {
     console.log(output);
   });
@@ -35,15 +36,14 @@ sort: 'asc' or 'des' (descending or ascending in size)
 
 limit: number to limit icons, defaults to 10.
 
+checkStatus: boolean. When true it checks the status code 200 before returning the list of icons. 
+
 # Test
 from the /test directory run, yarn test
 
 # TODO's
-- Check link URL's for a successful response (at the moment this library does not ensure that the icon exists). This is an update coming soon.
-
 - Refine the code to improve performance
-
-- Switch to use Jest for tests
+- Add Typscript
 
 
 

@@ -20,7 +20,6 @@ jest.setTimeout(30000);
 test('Ensure links are correct', async () => {
   for (var i = 0; i < linkTestData.length; i++) {
     const result = await webIconScraper({ limit: 1, url: linkTestData[i].url, sort: 'asc', checkStatus: false });
-    console.log(result.icons[0]);
     if (result.icons[0]) {
       expect(result.icons[0].link).toBe(linkTestData[i].expected);
     }

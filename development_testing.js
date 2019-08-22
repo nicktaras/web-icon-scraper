@@ -1,9 +1,10 @@
 const webIconScraper = require('./index');
 
 webIconScraper({
-  url: 'https://www.apple.com/au/',
+  url: 'https://auspost.com.au/',
   sort: 'des',
-  limit: 1
+  limit: 1,
+  checkStatus: false
 }).then(result => {
   console.log(result);
 }, err => {
