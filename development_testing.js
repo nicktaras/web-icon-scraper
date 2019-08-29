@@ -1,7 +1,7 @@
 const webIconScraper = require('./index');
 
 webIconScraper({
-  url: 'https://auspost.com.au/',
+  url: 'https://spectrum.chat/',
   sort: 'des',
   limit: 1,
   checkStatus: false

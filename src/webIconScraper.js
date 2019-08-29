@@ -78,10 +78,8 @@ const containsIcon = (rel) => {
 }
 
 const containsAppleIcon = (rel) => {
-  const appleIconTypes = [
-    'apple-touch-icon'
-  ]
-  return (appleIconTypes.includes(rel));
+  const relSimplified = rel.replace(/-/g, ' ');
+  return (relSimplified.includes('apple'));
 }
 
 const checkIconsStatus = async (reqTypes, reqTypeIndex, icons) => {
