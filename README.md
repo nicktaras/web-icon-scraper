@@ -2,7 +2,6 @@
 A Node Package to retrieve an array of favicons and apple-touch-icon images sorting them into ascending or descending size order.
 
 # Usage
-This is not production ready at this time - Please use with caution.
 
 Example Use:
 
@@ -30,13 +29,13 @@ Example Use:
 ````
 
 # Options:
-url: 'url' you wish to use as String (required)
+url: 'url' as String (required)
 
-sort: 'asc' or 'des' (descending or ascending in size)
+sort: 'asc' or 'des' (descending or ascending in icon size)
 
-limit: number to limit icons, defaults to 10.
+limit: limit icons as Integer.
 
-checkStatus: boolean. When true it checks the status code 200 before returning the list of icons. 
+checkStatus: When true it checks the status code of each icon, returns all of status code 200. 
 
 # Test
 from the /test directory run, yarn test
