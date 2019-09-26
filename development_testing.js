@@ -1,7 +1,7 @@
 const webIconScraper = require('./index');
 
 webIconScraper({
-  url: 'https://spectrum.chat/',
+  url: 'https://swedishhousemafia.com/',
   sort: 'des',
   limit: 1,
   checkStatus: false

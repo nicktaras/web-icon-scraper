@@ -10,9 +10,10 @@ const linkTestData = [
   { url: "https://www.ibm.com/au-en", expected: "https://www.ibm.com/favicon.ico" },
   { url: "https://www.bose.com.au/en_au/index.html", expected: "https://static.bose.com/etc/designs/bose/consumer-products-2016/favicon.ico" },
   { url: "https://momentjs.com", expected: "https://momentjs.com/static/img/moment-favicon.png" },
-  { url: "https://slack.com/intl/en-au/", expected: "https://a.slack-edge.com/4a5c4/marketing/img/meta/favicon-32.png" },
-  { url: "https://www.ministryofsound.com/", expected: "https://www.ministryofsound.com/media/3982/mos-favicon.png?width=57&height=57" },
-  { url: "https://brave.com/", expected: "https://brave.com/wp-content/uploads/2018/02/cropped-brave_appicon_release-32x32.png" }
+  { url: "https://slack.com/intl/en-au/", expected: "https://a.slack-edge.com/80588/marketing/img/meta/favicon-32.png" },
+  { url: "https://www.ministryofsound.com/", expected: "https://www.ministryofsound.com/media/3982/mos-favicon.png?width=32&height=32" },
+  { url: "https://brave.com/", expected: "https://brave.com/wp-content/uploads/2018/02/cropped-brave_appicon_release-32x32.png" },
+  { url: "https://swedishhousemafia.com/", expected: "https://swedishhousemafia.com/gfx/meta/favicon.ico?1615" }
 ];
 
 jest.setTimeout(30000);

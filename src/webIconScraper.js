@@ -17,11 +17,19 @@ const reduceSlashes = (url) => {
   return url.replace(/(\/)(?=\/\1)/g, "");
 }
 
+// remove . from start of path
+const removeRelativePath = (url) => {
+  if (url.indexOf('.') === 0) return url.replace('.', '');
+  return url;
+}
+
 // Clean up the link - TODO tidy this function.
 const getCleanLink = ({ link, host, reqProtocol }) => {
   if (!link) console.warn('getCleanLink: link was missing');
   const indexOfHttp = link.indexOf('http');
   const indexOfWww = link.indexOf('www');
+  // if link found starts with a relative path ./
+  link = removeRelativePath(link);
   // e.g. htts://www.a.com/favicon.ico
   if (indexOfHttp === 0 || indexOfWww === 0) return link;
   // e.g. example.www.a.com/favicon.ico
@@ -71,15 +79,19 @@ const removeDuplicateData = (icons) => {
 const containsIcon = (rel) => {
   const iconTypes = [
     'icon', 'msapplication - TileImage',
-    'image / vnd.microsoft.icon', 'image / x - icon',
+    'image/vnd.microsoft.icon', 'image/x-icon',
     'shortcut icon'
-  ]
+  ];
   return (iconTypes.includes(rel));
 }
 
 const containsAppleIcon = (rel) => {
-  const relSimplified = rel.replace(/-/g, ' ');
-  return (relSimplified.includes('apple'));
+  const appleIconTypes = [
+    'apple-touch-icon-precomposed',
+    'apple-touch-icon',
+    'apple'
+  ];
+  return (appleIconTypes.includes(rel));
 }
 
 const checkIconsStatus = async (reqTypes, reqTypeIndex, icons) => {
@@ -124,7 +136,8 @@ module.exports = {
           let icons = [];
           if (data) {
             data = data.toString();
-            // TODO - handle strategy for: undefinedRedirecting to https://...
+            // Must follow re-directs.
+            // undefinedRedirecting to ...
             const $ = cheerio.load(data);
             $('link').each(function () {
               if (icons.length < limit) {
@@ -151,7 +164,6 @@ module.exports = {
             else { icons = getIconDataOrdered({ sort, icons }) }
           }
           icons = removeDuplicateData(icons);
-          // Last Chance 
           if (icons.length === 0) {
             icons = [
               {
