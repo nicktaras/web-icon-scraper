@@ -1,10 +1,10 @@
 const webIconScraper = require('./index');
 
 webIconScraper({
-  url: 'https://swedishhousemafia.com/',
+  url: 'https://www.google.com',
   sort: 'des',
   limit: 1,
-  checkStatus: false
+  checkStatus: true
 }).then(result => {
   console.log(result);
 }, err => {

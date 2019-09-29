@@ -23,13 +23,21 @@ const removeRelativePath = (url) => {
   return url;
 }
 
-// Clean up the link - TODO tidy this function.
+// include / at start of path
+const includeRelativeSlash = (url) => {
+  if (url.indexOf('/') <= -1) return '/' + url;
+  return url;
+}
+
+// TODO tidy this function.
 const getCleanLink = ({ link, host, reqProtocol }) => {
   if (!link) console.warn('getCleanLink: link was missing');
   const indexOfHttp = link.indexOf('http');
   const indexOfWww = link.indexOf('www');
   // if link found starts with a relative path ./
   link = removeRelativePath(link);
+  // if link contains no /
+  link = includeRelativeSlash(link);
   // e.g. htts://www.a.com/favicon.ico
   if (indexOfHttp === 0 || indexOfWww === 0) return link;
   // e.g. example.www.a.com/favicon.ico
@@ -70,12 +78,14 @@ const getIconDataOrdered = ({ sort = 'asc', icons }) => {
   return icons.sort(sortBySize.descending);
 };
 
+// Remove duplicate data
 const removeDuplicateData = (icons) => {
   const uniqueIcons = new Set(icons);
   icons = [...uniqueIcons];
   return icons;
 }
 
+// Check meta for icons
 const containsIcon = (rel) => {
   const iconTypes = [
     'icon', 'msapplication - TileImage',
@@ -85,6 +95,7 @@ const containsIcon = (rel) => {
   return (iconTypes.includes(rel));
 }
 
+// Check meta for apple icons
 const containsAppleIcon = (rel) => {
   const appleIconTypes = [
     'apple-touch-icon-precomposed',
@@ -94,6 +105,7 @@ const containsAppleIcon = (rel) => {
   return (appleIconTypes.includes(rel));
 }
 
+// Resolve icons that can be found
 const checkIconsStatus = async (reqTypes, reqTypeIndex, icons) => {
   let iconsResolved = [];
   for (const icon of icons) {
@@ -106,6 +118,7 @@ const checkIconsStatus = async (reqTypes, reqTypeIndex, icons) => {
   return icons;
 }
 
+// Check if icon can be found
 const checkIconStatus = (reqTypes, reqTypeIndex, icon) => {
   return new Promise(function (resolve, reject) {
     reqTypes[reqTypeIndex].get(icon.link, (res) => {
@@ -117,27 +130,36 @@ const checkIconStatus = (reqTypes, reqTypeIndex, icon) => {
   });
 }
 
-module.exports = {
-  // Returns object array [{ type: String size: String link: String }]
-  getIconRequest: ({ url, sort = 'asc', limit = 10, checkStatus = false }) => {
-    return new Promise(function (resolve, reject) {
-      const _url = urlMod.parse(url, true);
-      const host = _url.host;
-      const protocol = _url.protocol;
-      const reqTypes = [http, https];
-      const reqTypeIndex = (protocol.indexOf('https') <= -1) ? 0 : 1;
-      const reqProtocol = (protocol.indexOf('https') <= -1) ? 'http' : 'https';
-      reqTypes[reqTypeIndex].get(url, (res) => {
-        let data;
-        res.on('data', (d) => {
-          data += d;
-        });
-        res.on('end', () => {
+// Core logic to return icons
+let followRedirectAttempts = 0;
+const iconRequestHandler = async ({ url, sort, limit, checkStatus, followRedirectsCount }) => {
+  return new Promise(function (resolve, reject) {
+    const _url = urlMod.parse(url, true);
+    const host = _url.host;
+    const protocol = _url.protocol;
+    const reqTypes = [http, https];
+    const reqTypeIndex = (protocol.indexOf('https') <= -1) ? 0 : 1;
+    const reqProtocol = (protocol.indexOf('https') <= -1) ? 'http' : 'https';
+    reqTypes[reqTypeIndex].get(url, (res) => {
+      let data;
+      res.on('data', (d) => {
+        data += d;
+      });
+      res.on('end', () => {
+        // Redirect Strategy
+        if (res.headers.location && followRedirectsCount < followRedirectAttempts) {
+          followRedirectAttempts++;
+          return iconRequestHandler({
+            url: `${protocol}${host}${res.headers.location}`,
+            sort,
+            limit,
+            checkStatus
+          });
+        } else {
+          // Resolve Icons Strategy
           let icons = [];
           if (data) {
             data = data.toString();
-            // Must follow re-directs.
-            // undefinedRedirecting to ...
             const $ = cheerio.load(data);
             $('link').each(function () {
               if (icons.length < limit) {
@@ -174,19 +196,41 @@ module.exports = {
             ]
           }
           if (checkStatus) {
-            checkIconsStatus(reqTypes, reqTypeIndex, icons).then((icons) => {
+            return checkIconsStatus(reqTypes, reqTypeIndex, icons).then((icons) => {
               resolve({ icons });
             });
           } else {
             resolve({ icons });
           }
-        });
-      }).on('error', (e) => {
+        }
+      });
+    }).on('error', (e) => {
+      reject({
+        err: 'web-icon-scraper: could not resolve data from url ',
+        info: e,
+        icons: []
+      });
+    });
+  });
+}
+
+module.exports = {
+  getIconRequest: ({ url, sort = 'asc', limit = 10, checkStatus = false, followRedirectsCount = 0 }) => {
+    return new Promise(function (resolve, reject) {
+      iconRequestHandler({ url, sort, limit, checkStatus, followRedirectsCount }).then((icons) => {
+        resolve({ icons });
+      }, (e) => {
         reject({
           err: 'web-icon-scraper: could not resolve data from url ',
           info: e,
           icons: []
         });
+      });
+    }, (e) => {
+      reject({
+        err: 'web-icon-scraper: could not resolve data from url ',
+        info: e,
+        icons: []
       });
     });
   }

@@ -13,7 +13,8 @@ Example Use:
     url: 'https://github.com',
     sort: 'des',
     limit: 1,
-    checkStatus: false
+    checkStatus: false,
+    followRedirects: false
   }).then(output => {
     console.log(output);
   });
@@ -36,6 +37,8 @@ sort: 'asc' or 'des' (descending or ascending in icon size)
 limit: limit icons as Integer.
 
 checkStatus: When true it checks the status code of each icon, returns all of status code 200. 
+
+followRedirectsCount: Limit the number of redirects, defaults to 0.
 
 # Test
 from the /test directory run, yarn test
