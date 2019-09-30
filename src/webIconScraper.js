@@ -130,6 +130,20 @@ const checkIconStatus = (reqTypes, reqTypeIndex, icon) => {
   });
 }
 
+const recursiveIconRequestHandler = ({ url, sort, limit, checkStatus, followRedirectsCount }) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      iconRequestHandler({ url, sort, limit, checkStatus, followRedirectsCount }).then((res) => {
+        if (res.redirect) {
+          return resolve(recursiveIconRequestHandler({ url: res.redirect, sort, limit, checkStatus, followRedirectsCount }))
+        } else {
+          return resolve(res.icons);
+        }
+      })
+    }, 0);
+  })
+}
+
 // Core logic to return icons
 let followRedirectAttempts = 0;
 const iconRequestHandler = async ({ url, sort, limit, checkStatus, followRedirectsCount }) => {
@@ -147,14 +161,9 @@ const iconRequestHandler = async ({ url, sort, limit, checkStatus, followRedirec
       });
       res.on('end', () => {
         // Redirect Strategy
-        if (res.headers.location && followRedirectsCount < followRedirectAttempts) {
+        if (res.headers.location && followRedirectAttempts < 5) {
           followRedirectAttempts++;
-          return iconRequestHandler({
-            url: `${protocol}${host}${res.headers.location}`,
-            sort,
-            limit,
-            checkStatus
-          });
+          resolve({ icons: [], redirect: `${res.headers.location}` })
         } else {
           // Resolve Icons Strategy
           let icons = [];
@@ -217,7 +226,7 @@ const iconRequestHandler = async ({ url, sort, limit, checkStatus, followRedirec
 module.exports = {
   getIconRequest: ({ url, sort = 'asc', limit = 10, checkStatus = false, followRedirectsCount = 0 }) => {
     return new Promise(function (resolve, reject) {
-      iconRequestHandler({ url, sort, limit, checkStatus, followRedirectsCount }).then((icons) => {
+      recursiveIconRequestHandler({ url, sort, limit, checkStatus, followRedirectsCount }).then((icons) => {
         resolve({ icons });
       }, (e) => {
         reject({

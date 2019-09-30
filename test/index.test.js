@@ -13,7 +13,8 @@ const linkTestData = [
   { url: "https://slack.com/intl/en-au/", expected: "https://a.slack-edge.com/80588/marketing/img/meta/favicon-32.png" },
   { url: "https://www.ministryofsound.com/", expected: "https://www.ministryofsound.com/media/3982/mos-favicon.png?width=32&height=32" },
   { url: "https://brave.com/", expected: "https://brave.com/wp-content/uploads/2018/02/cropped-brave_appicon_release-32x32.png" },
-  { url: "https://swedishhousemafia.com/", expected: "https://swedishhousemafia.com/gfx/meta/favicon.ico?1615" }
+  { url: "https://swedishhousemafia.com/", expected: "https://swedishhousemafia.com/gfx/meta/favicon.ico?1615" },
+  { url: "https://firebase.com", expected: "https://www.gstatic.com/devrel-devsite/v2355ed73ae6b243a36832e70498f2cd0b3f352ff30481ebdfdc56826b566bf8a/firebase/images/favicon.png" }
 ];
 
 jest.setTimeout(30000);
