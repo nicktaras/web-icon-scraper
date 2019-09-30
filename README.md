@@ -14,7 +14,7 @@ Example Use:
     sort: 'des',
     limit: 1,
     checkStatus: false,
-    followRedirects: false
+    followRedirectsCount: false
   }).then(output => {
     console.log(output);
   });
