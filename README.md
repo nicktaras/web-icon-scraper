@@ -14,7 +14,7 @@ Example Use:
     sort: 'des',
     limit: 1,
     checkStatus: false,
-    followRedirectsCount: false
+    followRedirectsCount: 0
   }).then(output => {
     console.log(output);
   });
@@ -42,6 +42,10 @@ followRedirectsCount: Limit the number of redirects, defaults to 0.
 
 # Test
 from the /test directory run, yarn test
+
+# Collaboration
+
+Please get in touch to share ideas or collaborate with me on this library.
 
 # TODO's
 - Refine the code to improve performance
