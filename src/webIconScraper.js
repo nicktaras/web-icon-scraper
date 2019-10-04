@@ -161,7 +161,7 @@ const iconRequestHandler = async ({ url, sort, limit, checkStatus, followRedirec
       });
       res.on('end', () => {
         // Redirect Strategy
-        if (res.headers.location && followRedirectAttempts < 5) {
+        if (res.headers.location && followRedirectAttempts < followRedirectsCount) {
           followRedirectAttempts++;
           resolve({ icons: [], redirect: `${res.headers.location}` })
         } else {
