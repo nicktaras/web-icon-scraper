@@ -4,6 +4,8 @@ const cheerio = require('cheerio');
 const sortBySize = require('./sortBySize');
 const urlMod = require('url');
 const domainExtList = require('./domainExtList');
+// import meta json
+const metaJSON = require('./metaKeys.json');
 
 // Get the max icon size data from meta
 const getIconMaxSize = (sizes) => {
@@ -31,6 +33,7 @@ const includeRelativeSlash = (url) => {
 
 // TODO tidy this function.
 const getCleanLink = ({ link, host, reqProtocol }) => {
+  console.log('inputs:', link, host, reqProtocol);
   if (!link) console.warn('getCleanLink: link was missing');
   const indexOfHttp = link.indexOf('http');
   const indexOfWww = link.indexOf('www');
@@ -58,7 +61,7 @@ const getCleanLink = ({ link, host, reqProtocol }) => {
     return reduceSlashes(`${reqProtocol}://${link}`);
   }
   if (host) {
-    return reduceSlashes(reqProtocol + '://' + host + link);
+    return reduceSlashes(reqProtocol + '://' + host + '/' + link);
   }
   return undefined;
 }
@@ -137,7 +140,7 @@ const recursiveIconRequestHandler = ({ url, sort, limit, checkStatus, followRedi
         if (res.redirect) {
           return resolve(recursiveIconRequestHandler({ url: res.redirect, sort, limit, checkStatus, followRedirectsCount }))
         } else {
-          return resolve(res.icons);
+          return resolve(res);
         }
       })
     }, 0);
@@ -167,9 +170,23 @@ const iconRequestHandler = async ({ url, sort, limit, checkStatus, followRedirec
         } else {
           // Resolve Icons Strategy
           let icons = [];
+          let meta = {};
           if (data) {
             data = data.toString();
             const $ = cheerio.load(data);
+            // output meta
+            $('meta').each(function () {
+              metaJSON.keys.map((metaKey) => {
+                const attrName = $(this).attr('name');
+                if ($(this).attr('content') && attrName && attrName.toLowerCase() == metaKey) {
+                  meta[metaKey] = $(this).attr('content');
+                }
+                const attrProperty = $(this).attr('property');
+                if ($(this).attr('content') && attrProperty && attrProperty.toLowerCase() == metaKey) {
+                  meta[metaKey] = $(this).attr('content');
+                }
+              });
+            });
             $('link').each(function () {
               if (icons.length < limit) {
                 const rel = $(this).attr('rel');
@@ -206,10 +223,10 @@ const iconRequestHandler = async ({ url, sort, limit, checkStatus, followRedirec
           }
           if (checkStatus) {
             return checkIconsStatus(reqTypes, reqTypeIndex, icons).then((icons) => {
-              resolve({ icons });
+              resolve({ meta, icons });
             });
           } else {
-            resolve({ icons });
+            resolve({ meta, icons });
           }
         }
       });
@@ -217,7 +234,8 @@ const iconRequestHandler = async ({ url, sort, limit, checkStatus, followRedirec
       reject({
         err: 'web-icon-scraper: could not resolve data from url ',
         info: e,
-        icons: []
+        icons: [],
+        meta: []
       });
     });
   });
@@ -226,8 +244,8 @@ const iconRequestHandler = async ({ url, sort, limit, checkStatus, followRedirec
 module.exports = {
   getIconRequest: ({ url, sort = 'asc', limit = 10, checkStatus = false, followRedirectsCount = 0 }) => {
     return new Promise(function (resolve, reject) {
-      recursiveIconRequestHandler({ url, sort, limit, checkStatus, followRedirectsCount }).then((icons) => {
-        resolve({ icons });
+      recursiveIconRequestHandler({ url, sort, limit, checkStatus, followRedirectsCount }).then((data) => {
+        resolve(data);
       }, (e) => {
         reject({
           err: 'web-icon-scraper: could not resolve data from url ',

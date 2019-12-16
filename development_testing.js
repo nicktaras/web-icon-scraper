@@ -1,7 +1,7 @@
 const webIconScraper = require('./index');
 
 webIconScraper({
-  url: 'https://firebase.com',
+  url: 'https://angular.io/',
   sort: 'des',
   limit: 1,
   checkStatus: true,
