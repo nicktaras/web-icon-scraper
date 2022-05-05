@@ -4,10 +4,8 @@ const cheerio = require('cheerio');
 const sortBySize = require('./sortBySize');
 const urlMod = require('url');
 const domainExtList = require('./domainExtList');
-// import meta json
 const metaJSON = require('./metaKeys.json');
 
-// Get the max icon size data from meta
 const getIconMaxSize = (sizes) => {
   if (!sizes) console.warn('getIconMaxSize: sizes were missing');
   const sIndex = sizes ? sizes.lastIndexOf('x') + 1 : undefined;
@@ -31,7 +29,6 @@ const includeRelativeSlash = (url) => {
   return url;
 }
 
-// TODO tidy this function.
 const getCleanLink = ({ link, host, reqProtocol }) => {
   console.log('inputs:', link, host, reqProtocol);
   if (!link) console.warn('getCleanLink: link was missing');
