@@ -1,4 +1,5 @@
 module.exports = [
+  ".ETH",
   ".CO.UK",
   ".UK",
   ".COM",

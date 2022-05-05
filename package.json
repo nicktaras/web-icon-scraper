@@ -1,14 +1,15 @@
 {
   "name": "web-icon-scraper",
-  "version": "0.1.7",
+  "version": "0.0.0-development",
   "description": "A Node Package to retrieve an array of favicons and apple-touch-icon images sorting them into ascending or descending size order.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nicktaras/web-icon-scraper.git"
+    "url": "https://github.com/nicktaras/web-icon-scraper.git"
   },
   "keywords": [
     "favicons",
@@ -25,7 +26,8 @@
   "homepage": "https://github.com/nicktaras/web-icon-scraper#readme",
   "devDependencies": {
     "jest": "^24.9.0",
-    "tap": "^14.6.1"
+    "tap": "^14.6.1",
+    "semantic-release": "^19.0.2"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.3"
