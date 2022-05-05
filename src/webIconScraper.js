@@ -230,7 +230,7 @@ const iconRequestHandler = async ({ url, sort, limit, checkStatus, followRedirec
       });
     }).on('error', (e) => {
       reject({
-        err: 'web-icon-scraper: could not resolve data from url ',
+        err: 'web-icon-scraper: could not resolve data from url this time.',
         info: e,
         icons: [],
         meta: []
