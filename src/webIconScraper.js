@@ -130,6 +130,7 @@ const checkIconStatus = (reqTypes, reqTypeIndex, icon) => {
   });
 }
 
+// handle recusive requestst to locate icons / following re-directs.
 const recursiveIconRequestHandler = ({ url, sort, limit, checkStatus, followRedirectsCount }) => {
   return new Promise((resolve) => {
     setTimeout(() => {
