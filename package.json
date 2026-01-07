@@ -26,7 +26,7 @@
   "homepage": "https://github.com/nicktaras/web-icon-scraper#readme",
   "devDependencies": {
     "jest": "^24.9.0",
-    "tap": "^14.6.1",
+    "tap": "^21.1.3",
     "semantic-release": "^19.0.2"
   },
   "dependencies": {
